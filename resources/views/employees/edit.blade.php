@@ -1,33 +1,116 @@
-<h2>Edit Data Pegawai</h2>
-<form action="{{ route('employees.update', $employee->id) }}" method="POST">
-    @csrf
-    @method('PUT')
-    <table>
-        <tr>
-            <td>Nama Lengkap</td>
-            <td><input type="text" name="nama_lengkap" value="{{ old('nama_lengkap', $employee->nama_lengkap) }}"></td>
-        </tr>
-        <tr>
-            <td>Email</td>
-            <td><input type="email" name="email" value="{{ old('email', $employee->email) }}"></td>
-        </tr>
-        <tr>
-            <td>Nomor Telepon</td>
-            <td><input type="text" name="nomor_telepon" value="{{ old('nomor_telepon', $employee->nomor_telepon) }}"></td>
-        </tr>
-        <tr>
-            <td>Tanggal Lahir</td>
-            <td><input type="date" name="tanggal_lahir" value="{{ old('tanggal_lahir', $employee->tanggal_lahir) }}"></td>
-        </tr>
-        <tr>
-            <td>Alamat</td> 
-            <td><input type="text" name="alamat" value="{{ old('alamat', $employee->alamat) }}"></td>
-        </tr>
-        <tr>
-            <td>Tanggal Masuk</td>
-            <td><input type="date" name="tanggal_masuk" value="{{ old('tanggal_masuk', $employee->tanggal_masuk) }}"></td>
-        </tr>
-        <tr>
+@extends('master')
+@section('title', 'Edit Data Pegawai')
+@section('page-title', 'Edit Data Pegawai')
+@section('content')
+<div class="bg-white shadow-md rounded-lg overflow-hidden">
+    <div class="p-6 bg-white border-b border-gray-200">
+        <div class="flex justify-between items-center mb-6">
+            <h2 class="text-xl font-semibold text-gray-800">Edit Data Pegawai</h2>
+            <a href="{{ route('employees.index') }}" class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded-lg">
+                Kembali
+            </a>
+        </div>
+
+        <form action="{{ route('employees.update', $employee->id) }}" method="POST" class="space-y-6">
+            @csrf
+            @method('PUT')
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Nama Lengkap -->
+                <div>
+                    <label for="nama_lengkap" class="block text-sm font-medium text-gray-700">Nama Lengkap</label>
+                    <input type="text" id="nama_lengkap" name="nama_lengkap" 
+                           value="{{ old('nama_lengkap', $employee->nama_lengkap) }}"
+                           class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                </div>
+
+                <!-- Email -->
+                <div>
+                    <label for="email" class="block text-sm font-medium text-gray-700">Email</label>
+                    <input type="email" id="email" name="email" 
+                           value="{{ old('email', $employee->email) }}"
+                           class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                </div>
+
+                <!-- Nomor Telepon -->
+                <div>
+                    <label for="nomor_telepon" class="block text-sm font-medium text-gray-700">Nomor Telepon</label>
+                    <input type="text" id="nomor_telepon" name="nomor_telepon" 
+                           value="{{ old('nomor_telepon', $employee->nomor_telepon) }}"
+                           class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                </div>
+
+                <!-- Tanggal Lahir -->
+                <div>
+                    <label for="tanggal_lahir" class="block text-sm font-medium text-gray-700">Tanggal Lahir</label>
+                    <input type="date" id="tanggal_lahir" name="tanggal_lahir" 
+                           value="{{ old('tanggal_lahir', $employee->tanggal_lahir) }}"
+                           class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                </div>
+
+                <!-- Alamat -->
+                <div class="md:col-span-2">
+                    <label for="alamat" class="block text-sm font-medium text-gray-700">Alamat</label>
+                    <textarea id="alamat" name="alamat" rows="3" 
+                              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">{{ old('alamat', $employee->alamat) }}</textarea>
+                </div>
+
+                <!-- Tanggal Masuk -->
+                <div>
+                    <label for="tanggal_masuk" class="block text-sm font-medium text-gray-700">Tanggal Masuk</label>
+                    <input type="date" id="tanggal_masuk" name="tanggal_masuk" 
+                           value="{{ old('tanggal_masuk', $employee->tanggal_masuk) }}"
+                           class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                </div>
+
+                <!-- Departemen -->
+                <div>
+                    <label for="departemen_id" class="block text-sm font-medium text-gray-700">Departemen</label>
+                    <select id="departemen_id" name="departemen_id" 
+                            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                        @foreach($departemen as $dept)
+                            <option value="{{ $dept->id }}" 
+                                {{ old('departemen_id', $employee->departemen_id) == $dept->id ? 'selected' : '' }}>
+                                {{ $dept->nama_departemen }}
+                            </option>
+                        @endforeach
+                    </select>
+                </div>
+
+                <!-- Jabatan -->
+                <div>
+                    <label for="jabatan_id" class="block text-sm font-medium text-gray-700">Jabatan</label>
+                    <select id="jabatan_id" name="jabatan_id" 
+                            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                        @foreach($positions as $position)
+                            <option value="{{ $position->id }}" 
+                                {{ old('jabatan_id', $employee->jabatan_id) == $position->id ? 'selected' : '' }}>
+                                {{ $position->nama_jabatan }}
+                            </option>
+                        @endforeach
+                    </select>
+                </div>
+
+                <!-- Status -->
+                <div>
+                    <label for="status" class="block text-sm font-medium text-gray-700">Status</label>
+                    <select id="status" name="status" 
+                            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                        <option value="aktif" {{ old('status', $employee->status) == 'aktif' ? 'selected' : '' }}>Aktif</option>
+                        <option value="nonaktif" {{ old('status', $employee->status) == 'nonaktif' ? 'selected' : '' }}>Nonaktif</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="flex justify-end space-x-3 mt-6">
+                <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg">
+                    Update
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+@endsection
             <td>Status</td>
             <td>
                 <select name="status">

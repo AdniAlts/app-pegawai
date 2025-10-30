@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Department;
 use Illuminate\Http\Request;
 use App\Models\Employee;
+use App\Models\Position;
 
 class EmployeeController extends Controller
 {
@@ -12,7 +14,7 @@ class EmployeeController extends Controller
      */
     public function index()
     {
-        $employees = Employee::latest()->paginate(5);
+        $employees = Employee::with(['department', 'position'])->latest()->paginate(5);
         return view('employees.index', compact('employees'));
     }
 
@@ -21,7 +23,9 @@ class EmployeeController extends Controller
      */
     public function create()
     {
-        return view('employees.create');
+        $departemen = Department::all();
+        $positions = Position::all();
+        return view('employees.create', compact('departemen', 'positions'));
     }
 
     /**
@@ -36,6 +40,8 @@ class EmployeeController extends Controller
             'tanggal_lahir' => 'required|date',
             'alamat' => 'required|string|max:255',
             'tanggal_masuk' => 'required|date',
+            'departemen_id' => 'required|exists:departments,id',
+            'jabatan_id' => 'required|exists:positions,id',
             'status' => 'required|string|max:50',
         ]);
         Employee::create($request->all());
@@ -57,7 +63,9 @@ class EmployeeController extends Controller
     public function edit(string $id)
     {
         $employee = Employee::find($id);
-        return view('employees.edit', compact('employee'));
+        $departemen = Department::all();
+        $positions = Position::all();
+        return view('employees.edit', compact('employee', 'departemen', 'positions'));
     }
 
     /**
@@ -72,6 +80,8 @@ class EmployeeController extends Controller
             'tanggal_lahir' => 'required|date',
             'alamat' => 'required|string|max:255',
             'tanggal_masuk' => 'required|date',
+            'departemen_id' => 'required|exists:departments,id',
+            'jabatan_id' => 'required|exists:positions,id',
             'status' => 'required|string|max:50',
         ]);
         $employee = Employee::findOrFail($id);
@@ -82,6 +92,8 @@ class EmployeeController extends Controller
             'tanggal_lahir',
             'alamat',
             'tanggal_masuk',
+            'departemen_id',
+            'jabatan_id',
             'status',
         ]));
         return redirect()->route('employees.index');
