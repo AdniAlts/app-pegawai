@@ -111,21 +111,3 @@
     </div>
 </div>
 @endsection
-            <td>Status</td>
-            <td>
-                <select name="status">
-                    <option value="aktif" {{ old('status', $employee->status) == 'aktif' ? 'selected' : '' }}>Aktif</option>
-                    <option value="tidak aktif" {{ old('status', $employee->status) == 'tidak aktif' ? 'selected' : '' }}>Tidak
-
-                        Aktif</option>
-
-                </select>
-            </td>
-        </tr>
-        <tr>
-            <td colspan="2">
-                <button type="submit">Update</button>
-            </td>
-        </tr>
-    </table>
-</form>
