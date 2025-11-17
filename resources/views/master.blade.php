@@ -23,6 +23,7 @@
                         <a href="{{ url('/positions') }}" class="text-white hover:bg-blue-700 px-3 py-2 rounded-md text-sm font-medium">Positions</a>
                         <a href="{{ url('/salaries') }}" class="text-white hover:bg-blue-700 px-3 py-2 rounded-md text-sm font-medium">Salaries</a>
                         <a href="{{ url('/attendance') }}" class="text-white hover:bg-blue-700 px-3 py-2 rounded-md text-sm font-medium">Attendance</a>
+                        <a href="{{ url('/users') }}" class="text-white hover:bg-blue-700 px-3 py-2 rounded-md text-sm font-medium">Users</a>
                     </div>
                 </div>
             </div>
