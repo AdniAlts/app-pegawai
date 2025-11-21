@@ -7,6 +7,7 @@
     <title>@yield('title', 'App Pegawai')</title>
     @vite('resources/css/app.css')
     <link href="https://cdn.jsdelivr.net/npm/flowbite@4.0.1/dist/flowbite.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
     /* Custom sidebar collapse animation styles */
     #top-bar-sidebar {
@@ -205,18 +206,35 @@
                                 </div>
                             </button>
                         </div>
-                        <div class="z-50 hidden bg-white border border-gray-200 rounded-lg shadow-lg w-44" id="dropdown-user">
+                        <div class="z-50 hidden bg-white border border-gray-200 rounded-lg shadow-lg w-48" id="dropdown-user">
                             <div class="px-4 py-3 border-b border-gray-200" role="none">
                                 <p class="text-sm font-medium text-gray-900" role="none">
-                                    Admin User
+                                    {{ Auth::user()->employee->name ?? 'Admin User' }}
                                 </p>
-                                <p class="text-sm text-gray-500 truncate" role="none">
-                                    admin@appPegawai.com
+                                <p class="text-xs text-gray-500 truncate" role="none">
+                                    {{ Auth::user()->username }}
                                 </p>
+                                @if(Auth::user()->employee)
+                                <p class="text-xs text-blue-600 font-medium" role="none">
+                                    {{ Auth::user()->employee->position->name ?? 'No Position' }}
+                                </p>
+                                @endif
                             </div>
                             <ul class="p-2 text-sm text-gray-700 font-medium" role="none">
                                 <li>
-                                    <a href="#" class="inline-flex items-center w-full p-2 hover:bg-gray-100 hover:text-gray-900 rounded text-red-600" role="menuitem">Sign out</a>
+                                    <a href="{{ route('users.show', Auth::id()) }}" class="inline-flex items-center w-full p-2 hover:bg-gray-100 hover:text-gray-900 rounded" role="menuitem">
+                                        <i class="fas fa-user mr-3 text-gray-400"></i>
+                                        Profile
+                                    </a>
+                                </li>
+                                <li>
+                                    <form action="{{ route('logout') }}" method="POST" class="w-full">
+                                        @csrf
+                                        <button type="submit" class="inline-flex items-center w-full p-2 hover:bg-red-50 hover:text-red-600 rounded text-red-600" role="menuitem">
+                                            <i class="fas fa-sign-out-alt mr-3"></i>
+                                            Logout
+                                        </button>
+                                    </form>
                                 </li>
                             </ul>
                         </div>
