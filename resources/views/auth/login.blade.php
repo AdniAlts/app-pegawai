@@ -116,16 +116,6 @@
                     Masuk
                 </button>
             </form>
-
-            <!-- Register Link -->
-            <div class="text-center pt-4 border-t border-gray-200">
-                <p class="text-gray-600">
-                    Belum punya akun? 
-                    <a href="{{ route('register') }}" class="text-blue-600 hover:text-blue-800 font-semibold hover:underline transition duration-200">
-                        Daftar di sini
-                    </a>
-                </p>
-            </div>
         </div>
 
         <!-- Footer -->

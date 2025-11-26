@@ -19,4 +19,14 @@ class User extends Authenticatable
     {
         return $this->belongsTo(Employee::class, 'pegawai_id');
     }
+
+    public function isAdmin()
+    {
+        return is_null($this->pegawai_id);
+    }
+
+    public function isPegawai()
+    {
+        return !is_null($this->pegawai_id);
+    }
 }

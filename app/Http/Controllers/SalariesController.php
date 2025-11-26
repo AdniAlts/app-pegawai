@@ -4,7 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Models\Employee;
 use App\Models\Salaries;
+use App\Models\Attendance;
 use Illuminate\Http\Request;
+use Carbon\Carbon;
 
 class SalariesController extends Controller
 {
@@ -14,7 +16,93 @@ class SalariesController extends Controller
     public function index()
     {
         $salaries = Salaries::with('employee')->latest()->paginate(5);
-        return view('salaries.index', compact('salaries'));
+        $employees = Employee::with('position')->get();
+        return view('salaries.index', compact('salaries', 'employees'));
+    }
+
+    /**
+     * Generate salary for an employee based on attendance.
+     */
+    public function generate(Request $request)
+    {
+        $request->validate([
+            'karyawan_id' => 'required|exists:employees,id',
+            'bulan' => 'required|date_format:Y-m',
+        ]);
+
+        $employee = Employee::with('position')->findOrFail($request->karyawan_id);
+        $bulan = $request->bulan;
+
+        // Parse the month to get start and end dates
+        $startDate = Carbon::createFromFormat('Y-m', $bulan)->startOfMonth();
+        $endDate = Carbon::createFromFormat('Y-m', $bulan)->endOfMonth();
+
+        // Get all attendance records for this employee in the selected month
+        $attendances = Attendance::where('karyawan_id', $employee->id)
+            ->whereBetween('tanggal', [$startDate, $endDate])
+            ->where('status_absensi', 'hadir')
+            ->get();
+
+        // Get base salary from position
+        $gajiPokok = $employee->position->gaji_pokok ?? 0;
+
+        // Calculate hourly wage (1/173 of monthly salary)
+        $upahSejam = $gajiPokok / 173;
+
+        // Work start time is 09:00
+        $jamMasuk = Carbon::createFromFormat('H:i:s', '09:00:00');
+
+        $totalPotongan = 0;
+        $totalMenitTerlambat = 0;
+
+        foreach ($attendances as $attendance) {
+            if ($attendance->waktu_masuk) {
+                $waktuMasuk = Carbon::createFromFormat('H:i:s', $attendance->waktu_masuk);
+                
+                // Calculate minutes late
+                if ($waktuMasuk->gt($jamMasuk)) {
+                    $menitTerlambat = $jamMasuk->diffInMinutes($waktuMasuk);
+                    $totalMenitTerlambat += $menitTerlambat;
+                    
+                    // Potongan gaji = (Jumlah menit keterlambatan / 60) × upah sejam
+                    $potongan = ($menitTerlambat / 60) * $upahSejam;
+                    $totalPotongan += $potongan;
+                }
+            }
+        }
+
+        // Tunjangan (can be customized, using 0 for now)
+        $tunjangan = 0;
+
+        // Total gaji
+        $totalGaji = $gajiPokok + $tunjangan - $totalPotongan;
+
+        // Check if salary record already exists for this employee and month
+        $existingSalary = Salaries::where('karyawan_id', $employee->id)
+            ->where('bulan', $bulan)
+            ->first();
+
+        if ($existingSalary) {
+            $existingSalary->update([
+                'gaji_pokok' => $gajiPokok,
+                'tunjangan' => $tunjangan,
+                'potongan' => round($totalPotongan, 2),
+                'total_gaji' => round($totalGaji, 2),
+            ]);
+            $message = 'Gaji berhasil diperbarui!';
+        } else {
+            Salaries::create([
+                'karyawan_id' => $employee->id,
+                'bulan' => $bulan,
+                'gaji_pokok' => $gajiPokok,
+                'tunjangan' => $tunjangan,
+                'potongan' => round($totalPotongan, 2),
+                'total_gaji' => round($totalGaji, 2),
+            ]);
+            $message = 'Gaji berhasil digenerate!';
+        }
+
+        return redirect()->route('salaries.index')->with('success', $message . ' Total keterlambatan: ' . $totalMenitTerlambat . ' menit.');
     }
 
     /**

@@ -8,6 +8,7 @@ use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\PositionController;
 use App\Http\Controllers\SalariesController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\PresensiController;
 
 // Authentication Routes
 Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
@@ -22,10 +23,20 @@ Route::middleware('auth')->group(function () {
         return view('dashboard');
     });
 
-    Route::resource('employees', EmployeeController::class);
-    Route::resource('departments', DepartmentController::class);
-    Route::resource('salaries', SalariesController::class);
-    Route::resource('positions', PositionController::class);
-    Route::resource('attendance', AttendanceController::class);
-    Route::resource('users', UserController::class);
+    // Admin Routes
+    Route::middleware('can:isAdmin')->group(function () {
+        Route::resource('employees', EmployeeController::class);
+        Route::resource('departments', DepartmentController::class);
+        Route::resource('salaries', SalariesController::class);
+        Route::post('/salaries/generate', [SalariesController::class, 'generate'])->name('salaries.generate');
+        Route::resource('positions', PositionController::class);
+        Route::resource('attendance', AttendanceController::class);
+        Route::resource('users', UserController::class);
+    });
+
+    // Pegawai Routes
+    Route::middleware('can:isPegawai')->group(function () {
+        Route::get('/presensi', [PresensiController::class, 'index'])->name('presensi.index');
+        Route::post('/presensi', [PresensiController::class, 'store'])->name('presensi.store');
+    });
 });

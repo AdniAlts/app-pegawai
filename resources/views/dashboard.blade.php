@@ -15,7 +15,7 @@
             <!-- Card 1: Employee Information -->
             <div class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
                 <!-- Card Header -->
-                <div class="bg-gradient-to-r from-blue-500 to-blue-600 px-6 py-4">
+                <div class="bg-blue-600 px-6 py-4">
                     <div class="flex items-center justify-between">
                         <div class="flex items-center">
                             <svg class="w-8 h-8 text-white mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
